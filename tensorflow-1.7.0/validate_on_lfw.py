@@ -40,6 +40,7 @@ from tensorflow.python.ops import data_flow_ops
 from sklearn import metrics
 from scipy.optimize import brentq
 from scipy import interpolate
+from tqdm import tqdm
 
 def main(args):
   
@@ -107,14 +108,14 @@ def evaluate(sess, enqueue_op, image_paths_placeholder, labels_placeholder, phas
     nrof_batches = nrof_images // batch_size
     emb_array = np.zeros((nrof_images, embedding_size))
     lab_array = np.zeros((nrof_images,))
-    for i in range(nrof_batches):
+    for i in tqdm(range(nrof_batches)):
         feed_dict = {phase_train_placeholder:False, batch_size_placeholder:batch_size}
         emb, lab = sess.run([embeddings, labels], feed_dict=feed_dict)
         lab_array[lab] = lab
         emb_array[lab, :] = emb
-        if i % 10 == 9:
-            print('.', end='')
-            sys.stdout.flush()
+        # if i % 10 == 9:
+        #     print('.', end='')
+        #     sys.stdout.flush()
     print('')
     embeddings = np.zeros((nrof_embeddings, embedding_size*nrof_flips))
     if use_flipped_images:
